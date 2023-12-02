@@ -4,8 +4,8 @@ Collect them stars.
 
 ## Requirements
 
-- python
-- talent
+* python
+* talent
 
 ## Setup
 
@@ -21,3 +21,10 @@ pip install
 
 Where work happens.
 
+```
+ptw
+```
+
+```
+python day-1/day_1.py
+```
