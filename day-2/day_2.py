@@ -75,7 +75,34 @@ def get_sum_of_possible_games_from_logs(txt):
     return sum(ids)
 
 
+def get_game_minimum_set(game):
+    draws = game["draws"]
+
+    minimum_set = [0, 0, 0]
+    for draw in draws:
+        minimum_set = tuple(max(d, m) for d, m in zip(draw, minimum_set))
+
+    return minimum_set
+
+
+def get_power_of_set(set):
+    return set[0] * set[1] * set[2]
+
+
+def sum_of_game_minimum_sets(txt):
+    lines = txt.splitlines()
+    games = [extract_game_from_game_log(line) for line in lines]
+    minimum_sets = [get_game_minimum_set(game) for game in games]
+    return sum(get_power_of_set(set) for set in minimum_sets)
+
+
 if __name__ == "__main__":
+    # PART 1
     working_dir = os.path.dirname(os.path.abspath(__file__))
     input_text = open(f"{working_dir}/day_2_input.txt").read()
-    print(get_sum_of_possible_games_from_logs(input_text))
+    print(f"Part 1: {get_sum_of_possible_games_from_logs(input_text)}")
+
+    # PART 2
+    # The power of a set of cubes is equal to the numbers of
+    # red, green, and blue cubes multiplied together.
+    print(f"Part 2: {sum_of_game_minimum_sets(input_text)}")

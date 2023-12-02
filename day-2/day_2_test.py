@@ -6,6 +6,9 @@ from day_2 import (
     is_game_possible,
     get_possible_games_from_logs,
     get_sum_of_possible_games_from_logs,
+    get_game_minimum_set,
+    get_power_of_set,
+    sum_of_game_minimum_sets,
 )
 
 test_text = """# Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
@@ -45,4 +48,17 @@ def test_get_possible_games_from_logs():
 
 
 def test_get_sum_of_possible_games_from_logs():
-    get_sum_of_possible_games_from_logs(test_text) == 8
+    assert get_sum_of_possible_games_from_logs(test_text) == 8
+
+
+def test_get_game_minimum_set():
+    # Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+    assert get_game_minimum_set({"draws": [(4, 0, 3), (1, 2, 6), (0, 2, 0)]}) == (4, 2, 6)
+
+
+def test_get_power_of_set():
+    assert get_power_of_set((4, 2, 6)) == 48
+
+
+def test_sum_of_game_minimum_sets():
+    assert sum_of_game_minimum_sets(test_text) == 2286
