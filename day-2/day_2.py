@@ -78,7 +78,7 @@ def get_sum_of_possible_games_from_logs(txt):
 def get_game_minimum_set(game):
     draws = game["draws"]
 
-    minimum_set = [0, 0, 0]
+    minimum_set = (0, 0, 0)
     for draw in draws:
         minimum_set = tuple(max(d, m) for d, m in zip(draw, minimum_set))
 
