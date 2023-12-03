@@ -48,7 +48,7 @@ def get_cells_neighbords(grid, start, end, line):
     if line > 0:
         start_index = max(0, start - 1)
         end_index = min(len(grid[line - 1]), end + 1)
-        
+
         neighbors.extend(grid[line - 1][start_index:end_index])
 
     if start > 0:
@@ -59,7 +59,7 @@ def get_cells_neighbords(grid, start, end, line):
     if (line + 1) < len(grid):
         start_index = max(0, start - 1)
         end_index = min(len(grid[line + 1]), end + 1)
-        
+
         neighbors.extend(grid[line + 1][start_index:end_index])
 
     return neighbors
@@ -86,7 +86,7 @@ def create_grid(txt):
     return [line[:] for line in txt.splitlines()]
 
 
-def sum_part_numbers(txt):
+def get_part_numbers(txt):
     grid = create_grid(txt)
 
     lines = txt.splitlines()
@@ -94,12 +94,61 @@ def sum_part_numbers(txt):
     numbers = []
     for index, line in enumerate(lines):
         numbers.extend(get_numbers(index, line))
-    
+
     part_numbers = list(filter(lambda number: is_valid_part_number(grid, number), numbers))
-    
+
+    return part_numbers
+
+
+def sum_part_numbers(txt):
+    part_numbers = get_part_numbers(txt)
     part_numbers_values = [number["number"] for number in part_numbers]
 
     return sum(part_numbers_values)
+
+
+def get_symbols(lines):
+    symbols = []
+
+    for line_index, line in enumerate(lines):
+        # get all * symbols
+        # print(line)
+        for match in re.finditer("\*", line):
+            symbols.append({"start": match.start(), "end": match.end(), "line": line_index})
+
+    return symbols
+
+
+def get_near_numbers(part_numbers, symbol):
+    near_part_numbers = []
+
+    for part_number in part_numbers:
+        if abs(part_number["line"] - symbol["line"]) < 2:
+            # in line vicinity
+            if part_number["start"] <= symbol["start"] + 1:
+                if part_number["end"] > symbol["start"] - 1:
+                    near_part_numbers.append(part_number)
+
+    return near_part_numbers
+
+
+def get_gear_ratio(txt):
+    part_numbers = get_part_numbers(txt)
+
+    # A gear is any * symbol that is adjacent to exactly two part numbers.
+    # Its gear ratio is the result of multiplying those two numbers together.
+    lines = txt.splitlines()
+    symbols = get_symbols(lines)
+
+    symbols_with_near_numbers = [get_near_numbers(part_numbers, symbol) for symbol in symbols]
+
+    gear_symbols_numbres = [symbol for symbol in symbols_with_near_numbers if len(symbol) == 2]
+
+    gear_products = [gear[0]["number"] * gear[1]["number"] for gear in gear_symbols_numbres]
+
+    return sum(gear_products)
+
+    # part_numbers_values = [number["number"] for number in part_numbers]
 
 
 if __name__ == "__main__":
@@ -107,3 +156,6 @@ if __name__ == "__main__":
     working_dir = os.path.dirname(os.path.abspath(__file__))
     input_text = open(f"{working_dir}/day_3_input.txt").read()
     print(f"Part 1: {sum_part_numbers(input_text)}")
+
+    # PART 2
+    print(f"Part 2: {get_gear_ratio(input_text)}")
