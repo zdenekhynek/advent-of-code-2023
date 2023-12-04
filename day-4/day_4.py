@@ -51,10 +51,8 @@ def get_cards_score(cards_text):
 
 def get_total_scratchcards(cards_text):
     cards = [parse_card_text(line) for line in cards_text.split("\n")]
-    # winning_numbers = [find_winning_numbers(card[0], card[1]) for card in cards]
 
     cards_number = 0
-    # card_stack = []
 
     # So, if you win a copy of card 10 and it has 5 matching numbers,
     # it would then win a copy of the same cards that the original
@@ -63,18 +61,15 @@ def get_total_scratchcards(cards_text):
 
     curr_index = 0
     card_queue = [(curr_index, cards[0])]
-    #card_queue = [(i, card) for i, card in enumerate(cards)]
-    # print(f"card_queue: {len(card_queue)}")
     while len(card_queue) > 0:
         (card_index, card) = card_queue.pop(0)
         cards_number += 1
         winning_numbers = find_winning_numbers(card[0], card[1])
-        
+
         queue_index = card_index + 1
         cards_to_queue = cards[queue_index : queue_index + len(winning_numbers)]
-        #print(f"Popped card {card_index}, queue index: {queue_index}, queue length: {len(card_queue)}, adding: {len(winning_numbers)}")
-        
-        #print(f"Queueing cards {queue_index}, {len(winning_numbers)}, len(cards_to_queue): {len(cards_to_queue)}")
+        # print(f"Popped card {card_index}, queue index: {queue_index}, queue length: {len(card_queue)}, adding: {len(winning_numbers)}")
+
         for card_to_queue in cards_to_queue:
             card_queue.append((queue_index, card_to_queue))
             queue_index += 1
@@ -83,16 +78,6 @@ def get_total_scratchcards(cards_text):
             curr_index += 1
             card_queue.append((curr_index, cards[curr_index]))
             print(f"Adding card {curr_index} to queue {len(card_queue)}")
-
-        # cards_to_queue = cards[card_index + 1 : len(winning_numbers)]
-        # card_queue.extend([(card_index + 1, c)for c in cards_to_queue])
-  
-    # for index, card in enumerate(cards):
-    #     winning_numbers = find_winning_numbers(card[0], card[1])
-    #     all_cards.append(winning_numbers)
-
-    #     # add winning cards to processing
-    #     all_cards.extend(cards[index : len(winning_numbers)])
 
     return cards_number
 
