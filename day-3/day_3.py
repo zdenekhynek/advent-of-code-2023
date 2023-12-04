@@ -123,8 +123,8 @@ def get_near_numbers(part_numbers, symbol):
     near_part_numbers = []
 
     for part_number in part_numbers:
+        # is in the line vicinity
         if abs(part_number["line"] - symbol["line"]) < 2:
-            # in line vicinity
             if part_number["start"] <= symbol["start"] + 1:
                 if part_number["end"] > symbol["start"] - 1:
                     near_part_numbers.append(part_number)
@@ -132,7 +132,7 @@ def get_near_numbers(part_numbers, symbol):
     return near_part_numbers
 
 
-def get_gear_ratio(txt):
+def get_gear_symbols(txt):
     part_numbers = get_part_numbers(txt)
 
     # A gear is any * symbol that is adjacent to exactly two part numbers.
@@ -142,13 +142,13 @@ def get_gear_ratio(txt):
 
     symbols_with_near_numbers = [get_near_numbers(part_numbers, symbol) for symbol in symbols]
 
-    gear_symbols_numbres = [symbol for symbol in symbols_with_near_numbers if len(symbol) == 2]
+    return [symbol for symbol in symbols_with_near_numbers if len(symbol) == 2]
 
-    gear_products = [gear[0]["number"] * gear[1]["number"] for gear in gear_symbols_numbres]
 
+def compute_gear_ratios(txt):
+    gear_symbols = get_gear_symbols(txt)
+    gear_products = [gear[0]["number"] * gear[1]["number"] for gear in gear_symbols]
     return sum(gear_products)
-
-    # part_numbers_values = [number["number"] for number in part_numbers]
 
 
 if __name__ == "__main__":
@@ -158,4 +158,4 @@ if __name__ == "__main__":
     print(f"Part 1: {sum_part_numbers(input_text)}")
 
     # PART 2
-    print(f"Part 2: {get_gear_ratio(input_text)}")
+    print(f"Part 2: {compute_gear_ratios(input_text)}")

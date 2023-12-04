@@ -1,4 +1,12 @@
-from day_3 import get_numbers, create_grid, is_valid_part_number, get_cells_neighbords, has_symbol, sum_part_numbers, get_gear_ratio
+from day_3 import (
+    get_numbers,
+    create_grid,
+    is_valid_part_number,
+    get_cells_neighbords,
+    has_symbol,
+    sum_part_numbers,
+    compute_gear_ratios,
+)
 
 test_small_input = """abcd
 efgh
@@ -81,4 +89,4 @@ def test_sum_part_numbers():
 
 
 def test_get_gear_ratio():
-    assert get_gear_ratio(test_input) == 467835
+    assert compute_gear_ratios(test_input) == 467835
