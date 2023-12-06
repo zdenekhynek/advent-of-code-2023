@@ -92,8 +92,8 @@ def get_seeds_id(txt, is_range=False):
                 range_start = seed_number
             else:
                 range_end = range_start + seed_number
-                range_seed_numbers.append((range_start, range_end, seed_number))
-                # range_seed_numbers.extend(list(range(range_start, range_end)))
+                #range_seed_numbers.append((range_start, range_end, seed_number))
+                range_seed_numbers.extend(list(range(range_start, range_end)))
         return range_seed_numbers
 
 
@@ -130,7 +130,6 @@ def get_lowest_location_number_for_seed_range(txt):
     print(f"Running for: {len(seeds)} seeds.")
 
     locations = [get_location_for_seed(seed, categories) for seed in tqdm.tqdm(seeds)]
-    print(locations)
     return min(locations)
 
 
