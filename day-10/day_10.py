@@ -94,14 +94,10 @@ def get_cell_neighbors(cell, map):
     x = cell["x"]
     y = cell["y"]
 
-    # if (x - 1) >= 0 and (y - 1) >= 0:
-    #     neighbors.append(map["cells"][y - 1][x - 1])
     if (y - 1) >= 0:
         neighbor = map["cells"][y - 1][x]
         if neighbor["char"] in ["7", "F", "|"]:
             neighbors.append(neighbor)
-    # if (y - 1) >= 0 and (x + 1) < map["size"][0]:
-    #     neighbors.append(map["cells"][y - 1][x + 1])
 
     if (x - 1) >= 0:
         neighbor = map["cells"][y][x - 1]
@@ -112,14 +108,10 @@ def get_cell_neighbors(cell, map):
         if neighbor["char"] in ["7", "J", "-"]:
             neighbors.append(neighbor)
 
-    # if (x - 1) < map["size"][0] and (y + 1) < map["size"][1]:
-    #     neighbors.append(map["cells"][y + 1][x - 1])
     if (y + 1) < map["size"][1]:
         neighbor = map["cells"][y + 1][x]
         if neighbor["char"] in ["|", "J", "L"]:
             neighbors.append(neighbor)
-    # if (y + 1) < map["size"][0] and (x + 1) < map["size"][1]:
-    #     neighbors.append(map["cells"][y + 1][x + 1])
 
     return neighbors
 
@@ -139,8 +131,6 @@ def get_paths_from_start_point(map):
                 if len(path) > 4 and path[-1] in start_neighbors:
                     viable_paths.append(path)
 
-        print("viable paths", viable_paths)
-
         # there should be two identical viable paths?
         return viable_paths[0]
 
@@ -151,11 +141,69 @@ def get_furthest_tile_from_start(input_txt):
     return len(path) / 2
 
 
+def cast_from_tile(tile, path, map, direction, num_crosses=0):
+    if tile in path:
+        num_crosses += 1
+
+    # cast north
+    if direction == "N":
+        if tile["y"] > 0:
+            tile = map["cells"][tile["y"] - 1][tile["x"]]
+        else:
+            return num_crosses
+    elif direction == "E":
+        if tile["x"] > 0:
+            tile = map["cells"][tile["y"]][tile["x"] - 1]
+        else:
+            return num_crosses
+    elif direction == "S":
+        if tile["y"] < map["size"][1] - 1:
+            tile = map["cells"][tile["y"] + 1][tile["x"]]
+        else:
+            return num_crosses
+    elif direction == "W":
+        if tile["x"] < map["size"][0] - 1:
+            tile = map["cells"][tile["y"]][tile["x"] + 1]
+        else:
+            return num_crosses
+
+    return cast_from_tile(tile, path, map, direction, num_crosses)
+
+
+def is_nested_tile(tile, path, map):
+    # raycasting
+    if tile in path:
+        return False
+
+    directions = ["N", "E", "S", "W"]
+    num_direction_crosses = [cast_from_tile(tile, path, map, direction) for direction in directions]
+    return all([num % 2 == 1 for num in num_direction_crosses])
+
+
+def get_nested_tiles(map):
+    path = get_paths_from_start_point(map)
+
+    nested_tiles = []
+    for cell_row in map["cells"]:
+        for cell in cell_row:
+          is_nested = is_nested_tile(cell, path, map)
+          if is_nested:
+              nested_tiles.append(cell)
+
+    return nested_tiles
+
+
+def get_num_of_nested_tiles(input_txt):
+    map = create_map_from_txt(input_txt)
+    nested_cells = get_nested_tiles(map)
+    return len(nested_cells)
+
+
 if __name__ == "__main__":
     # PART 1
     working_dir = os.path.dirname(os.path.abspath(__file__))
     input_text = open(f"{working_dir}/day_10_input.txt").read()
-    print(f"Part 1: {get_furthest_tile_from_start(input_text)}")
+    # print(f"Part 1: {get_furthest_tile_from_start(input_text)}")
 
     # PART 2
-    # print(f"Part 2: {get_sum_of_next_values(input_text, True)}")
+    print(f"Part 2: {get_num_of_nested_tiles(input_text)}")

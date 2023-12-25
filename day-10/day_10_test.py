@@ -7,6 +7,10 @@ from day_10 import (
     follow_path,
     get_paths_from_start_point,
     get_furthest_tile_from_start,
+    cast_from_tile,
+    is_nested_tile,
+    get_nested_tiles,
+    get_num_of_nested_tiles,
 )
 
 
@@ -38,12 +42,52 @@ L|-JF"""
 
 
 [
-    [{'x': 1, 'y': 1, 'char': 'S'}, {'x': 1, 'y': 0, 'char': 'L'}, {'x': 2, 'y': 0, 'char': '|'}, {'x': 2, 'y': 1, 'char': '-'}, {'x': 3, 'y': 1, 'char': '7'}, {'x': 3, 'y': 2, 'char': '|'}, {'x': 3, 'y': 3, 'char': 'J'}, {'x': 2, 'y': 3, 'char': '-'}, {'x': 1, 'y': 3, 'char': 'L'}, {'x': 1, 'y': 2, 'char': '|'}]
-    ,
-    [{'x': 1, 'y': 1, 'char': 'S'}, {'x': 0, 'y': 1, 'char': '7'}, {'x': 0, 'y': 2, 'char': 'L'}, {'x': 1, 'y': 2, 'char': '|'}, {'x': 1, 'y': 3, 'char': 'L'}, {'x': 2, 'y': 3, 'char': '-'}, {'x': 3, 'y': 3, 'char': 'J'}, {'x': 3, 'y': 2, 'char': '|'}, {'x': 3, 'y': 1, 'char': '7'}, {'x': 2, 'y': 1, 'char': '-'}],
-    [{'x': 1, 'y': 1, 'char': 'S'}, {'x': 2, 'y': 1, 'char': '-'}, {'x': 3, 'y': 1, 'char': '7'}, {'x': 3, 'y': 2, 'char': '|'}, {'x': 3, 'y': 3, 'char': 'J'}, {'x': 2, 'y': 3, 'char': '-'}, {'x': 1, 'y': 3, 'char': 'L'}, {'x': 1, 'y': 2, 'char': '|'}],
-    [{'x': 1, 'y': 1, 'char': 'S'}, {'x': 1, 'y': 2, 'char': '|'}, {'x': 1, 'y': 3, 'char': 'L'}, {'x': 2, 'y': 3, 'char': '-'}, {'x': 3, 'y': 3, 'char': 'J'}, {'x': 3, 'y': 2, 'char': '|'}, {'x': 3, 'y': 1, 'char': '7'}, {'x': 2, 'y': 1, 'char': '-'}]
+    [
+        {"x": 1, "y": 1, "char": "S"},
+        {"x": 1, "y": 0, "char": "L"},
+        {"x": 2, "y": 0, "char": "|"},
+        {"x": 2, "y": 1, "char": "-"},
+        {"x": 3, "y": 1, "char": "7"},
+        {"x": 3, "y": 2, "char": "|"},
+        {"x": 3, "y": 3, "char": "J"},
+        {"x": 2, "y": 3, "char": "-"},
+        {"x": 1, "y": 3, "char": "L"},
+        {"x": 1, "y": 2, "char": "|"},
+    ],
+    [
+        {"x": 1, "y": 1, "char": "S"},
+        {"x": 0, "y": 1, "char": "7"},
+        {"x": 0, "y": 2, "char": "L"},
+        {"x": 1, "y": 2, "char": "|"},
+        {"x": 1, "y": 3, "char": "L"},
+        {"x": 2, "y": 3, "char": "-"},
+        {"x": 3, "y": 3, "char": "J"},
+        {"x": 3, "y": 2, "char": "|"},
+        {"x": 3, "y": 1, "char": "7"},
+        {"x": 2, "y": 1, "char": "-"},
+    ],
+    [
+        {"x": 1, "y": 1, "char": "S"},
+        {"x": 2, "y": 1, "char": "-"},
+        {"x": 3, "y": 1, "char": "7"},
+        {"x": 3, "y": 2, "char": "|"},
+        {"x": 3, "y": 3, "char": "J"},
+        {"x": 2, "y": 3, "char": "-"},
+        {"x": 1, "y": 3, "char": "L"},
+        {"x": 1, "y": 2, "char": "|"},
+    ],
+    [
+        {"x": 1, "y": 1, "char": "S"},
+        {"x": 1, "y": 2, "char": "|"},
+        {"x": 1, "y": 3, "char": "L"},
+        {"x": 2, "y": 3, "char": "-"},
+        {"x": 3, "y": 3, "char": "J"},
+        {"x": 3, "y": 2, "char": "|"},
+        {"x": 3, "y": 1, "char": "7"},
+        {"x": 2, "y": 1, "char": "-"},
+    ],
 ]
+
 
 def test_create_map_from_txt():
     map = create_map_from_txt(test_input)
@@ -120,6 +164,45 @@ def test_get_paths_from_start_point():
 
 
 def test_get_furthest_tile_from_start():
-    # assert get_furthest_tile_from_start(test_input) == 4
-    # assert get_furthest_tile_from_start(test_input2) == 8
+    assert get_furthest_tile_from_start(test_input) == 4
+    assert get_furthest_tile_from_start(test_input2) == 8
     assert get_furthest_tile_from_start(test_input3) == 4
+
+
+def test_cast_from_tile():
+    map = create_map_from_txt(test_input)
+    path = get_paths_from_start_point(map)
+    assert cast_from_tile(map["cells"][2][2], path, map, "N") == 1
+    assert cast_from_tile(map["cells"][2][2], path, map, "S") == 1
+    assert cast_from_tile(map["cells"][2][2], path, map, "E") == 1
+    assert cast_from_tile(map["cells"][2][2], path, map, "W") == 1
+
+
+def test_is_nested_tile():
+    map = create_map_from_txt(test_input)
+    path = get_paths_from_start_point(map)
+    assert is_nested_tile(map["cells"][2][2], path, map) == True
+    assert is_nested_tile(map["cells"][2][1], path, map) == False
+    assert is_nested_tile(map["cells"][0][1], path, map) == False
+
+
+def test_get_nested_tiles():
+    map = create_map_from_txt(test_input)
+    assert len(get_nested_tiles(map)) == 1
+
+
+test_part2_input = """...........
+.S-------7.
+.|F-----7|.
+.||.....||.
+.||.....||.
+.|L-7.F-J|.
+.|..|.|..|.
+.L--J.L--J.
+...........
+"""
+
+
+def test_get_num_of_nested_tiles():
+    assert get_num_of_nested_tiles(test_input) == 1
+    assert get_num_of_nested_tiles(test_part2_input) == 4
