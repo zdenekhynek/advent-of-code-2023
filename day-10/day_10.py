@@ -141,17 +141,34 @@ def get_furthest_tile_from_start(input_txt):
     return len(path) / 2
 
 
-def cast_from_tile(tile, path, map, direction, num_crosses=0):
+def cast_from_tile(tile, path, map, direction, num_crosses=0, on_line_char=None):
     if tile in path:
-        num_crosses += 1
+        if direction == "N" or direction == "S":
+            if tile["char"] == "-":
+                num_crosses += 1
+        elif direction == "W" or direction == "E":
+            if tile["char"] == "|" or tile["char"] == "L" or tile["char"] == "J":
+                num_crosses += 1
+            # if on_line_char is None:
+            #   if tile["char"] == "F" or tile["char"] == "L":
+            #     on_line_char = tile["char"]
+            # elif on_line_char:
+            #   if on_line_char == "F" and tile["char"] == "J":
+            #       num_crosses += 1
+            #       on_line_char = None
+            #   elif on_line_char == "L" and tile["char"] == "7":
+            #       num_crosses += 1
+            #       on_line_char = None
+            #   # if tile["char"] == "J" or tile["char"] == "7":
+            #   num_crosses += 1
+            #   on_line_char = None
 
-    # cast north
     if direction == "N":
         if tile["y"] > 0:
             tile = map["cells"][tile["y"] - 1][tile["x"]]
         else:
             return num_crosses
-    elif direction == "E":
+    elif direction == "W":
         if tile["x"] > 0:
             tile = map["cells"][tile["y"]][tile["x"] - 1]
         else:
@@ -161,13 +178,13 @@ def cast_from_tile(tile, path, map, direction, num_crosses=0):
             tile = map["cells"][tile["y"] + 1][tile["x"]]
         else:
             return num_crosses
-    elif direction == "W":
+    elif direction == "E":
         if tile["x"] < map["size"][0] - 1:
             tile = map["cells"][tile["y"]][tile["x"] + 1]
         else:
             return num_crosses
 
-    return cast_from_tile(tile, path, map, direction, num_crosses)
+    return cast_from_tile(tile, path, map, direction, num_crosses, on_line_char)
 
 
 def is_nested_tile(tile, path, map):
@@ -175,7 +192,8 @@ def is_nested_tile(tile, path, map):
     if tile in path:
         return False
 
-    directions = ["N", "E", "S", "W"]
+    # directions = ["N", "E", "S", "W"]
+    directions = ["E"]
     num_direction_crosses = [cast_from_tile(tile, path, map, direction) for direction in directions]
     return all([num % 2 == 1 for num in num_direction_crosses])
 
@@ -186,16 +204,36 @@ def get_nested_tiles(map):
     nested_tiles = []
     for cell_row in map["cells"]:
         for cell in cell_row:
-          is_nested = is_nested_tile(cell, path, map)
-          if is_nested:
-              nested_tiles.append(cell)
+            is_nested = is_nested_tile(cell, path, map)
+            if is_nested:
+                nested_tiles.append(cell)
 
-    return nested_tiles
+    return nested_tiles, path
+
+
+def visualize_map(map, path, nested_cells):
+    for y, line in enumerate(map["cells"]):
+        for x, cell in enumerate(line):
+            if cell["char"] == "S":
+                print("S", end="")
+            else:
+                if cell in path:
+                    # print("X", end="")
+                    print(cell["char"], end="")
+                elif cell in nested_cells:
+                    print("I", end="")
+                else:
+                    print("0", end="")
+        print("\n")
 
 
 def get_num_of_nested_tiles(input_txt):
     map = create_map_from_txt(input_txt)
-    nested_cells = get_nested_tiles(map)
+    nested_cells, path = get_nested_tiles(map)
+
+    visualize_map(map, path, nested_cells)
+
+    print(nested_cells)
     return len(nested_cells)
 
 
